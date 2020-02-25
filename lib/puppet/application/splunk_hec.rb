@@ -57,24 +57,10 @@ class Puppet::Application::Splunk_hec < Puppet::Application
   end
 
   def main
-    # This is waiting for > 5.3.0 version of metrics collector
-    # data = STDIN.lines.map {|l| JSON.parse(l)}
-    #
-    # Below works for metrics collection < 5.3.0
     begin
-      datainput = STDIN.read
+      data = STDIN.lines.map {|l| JSON.parse(l)}
     rescue StandardError => e
       Puppet.info 'Unable to parse STDIN, is it text?'
-      Puppet.info e.message
-      Puppet.info e.backtrace.inspect
-    end
-    cleaned = datainput.gsub("\n}{\n", "\n},{\n")
-    cleaned = cleaned.insert(0, '[')
-    cleaned = cleaned.insert(-1, ']')
-    begin
-      data = JSON.parse(cleaned)
-    rescue StandardError => e
-      Puppet.info 'Unable to parse json from stdin'
       Puppet.info e.message
       Puppet.info e.backtrace.inspect
     end
